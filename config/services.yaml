@@ -32,3 +32,4 @@ services:
     App\Service\SlackApiClient:
         arguments:
             - '@eight_points_guzzle.client.slack'
+            
