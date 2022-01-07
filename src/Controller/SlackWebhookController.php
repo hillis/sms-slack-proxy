@@ -8,21 +8,23 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Service\SlackApiClient;
 use Symfony\Component\Notifier\Notification\Notification;
 use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\Notifier\Recipient\AdminRecipient;
+use App\Service\SlackApiClient;
 
 /**
  * @Route("/webhooks/slack")
  */
 class SlackWebhookController extends AbstractController
 {
-    /**
-     * @Route("/events", name="webhook.slack.action")
-     * @param Request $request
-     * @return Response
-     */
+ /**
+  * @Route("/events", name="webhook.slack.action")
+  * @param Request $request
+  * @param SlackApiClient $slackApiClient
+  * @param NotifierInterface $notifier
+  * @return Response
+  */
     public function handleSlackEvent(Request $request, SlackApiClient $slackApiClient, NotifierInterface $notifier)
 {
     $data = json_decode($request->getContent(), true);
@@ -47,12 +49,10 @@ class SlackWebhookController extends AbstractController
     }
 
     $supportResponseMessage = $event['text'];
-
     $messages = $slackApiClient->getConversationReplies($threadId);
     $parent = $messages[0];
     $firstBlock = $parent['blocks'][0];
     $customerPhoneNumber = $firstBlock['text']['text'];
-
     $notifier->send(
         new Notification($supportResponseMessage, ['sms']), 
         new AdminRecipient('', $customerPhoneNumber)
