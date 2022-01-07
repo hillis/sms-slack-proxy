@@ -18,13 +18,12 @@ use Symfony\Component\Notifier\Recipient\AdminRecipient;
  */
 class SlackWebhookController extends AbstractController
 {
-
-/**
- * @Route("/", name="webhook.slack.action")
- * @param Request $request
- * @return Response
- */
-public function handleSlackEvent(Request $request)
+    /**
+     * @Route("/events", name="webhook.slack.action")
+     * @param Request $request
+     * @return Response
+     */
+    public function handleSlackEvent(Request $request, SlackApiClient $slackApiClient, NotifierInterface $notifier)
 {
     $data = json_decode($request->getContent(), true);
     $event = $data['event'];
@@ -49,15 +48,15 @@ public function handleSlackEvent(Request $request)
 
     $supportResponseMessage = $event['text'];
 
-    $notifier->send(
-        new Notification($supportResponseMessage, ['sms']), 
-        new AdminRecipient('', $customerPhoneNumber)
-    );
-
     $messages = $slackApiClient->getConversationReplies($threadId);
     $parent = $messages[0];
     $firstBlock = $parent['blocks'][0];
     $customerPhoneNumber = $firstBlock['text']['text'];
+
+    $notifier->send(
+        new Notification($supportResponseMessage, ['sms']), 
+        new AdminRecipient('', $customerPhoneNumber)
+    );
 
     return new JsonResponse();
 }
