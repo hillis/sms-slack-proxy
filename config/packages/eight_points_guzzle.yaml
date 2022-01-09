@@ -9,6 +9,6 @@ eight_points_guzzle:
                 http_errors: true
                 headers:
                     Accept: "application/x-www-form-urlencoded"
+                    Authorization: "Bearer %env(SLACK_ACCESS_TOKEN)%"
                 query:
-                    token: '%env(SLACK_ACCESS_TOKEN)%'
                     channel: '%env(SLACK_CHANNEL)%'
