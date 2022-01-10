@@ -21,7 +21,6 @@
 ###< phpunit/phpunit ###
 .DS_Store
 src/.DS_Store
-.env
 .env.test
 .env.local
 config/.DS_Store
